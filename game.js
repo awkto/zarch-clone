@@ -401,14 +401,17 @@ function updateShip(dt) {
 
 function fire() {
   ship.cool = 0.16;
-  const fx = Math.sin(ship.yaw), fz = Math.cos(ship.yaw);
-  const sp = 90;
-  // slight downward aim so shots meet the ground ahead, plus current ship velocity
+  // shots follow the ship's nose vector, so pitch (tilt) aims them up/down
+  const cp = Math.cos(ship.pitch), sp = Math.sin(ship.pitch);
+  const sy = Math.sin(ship.yaw), cy = Math.cos(ship.yaw);
+  const dx = cp * sy, dy = -sp, dz = cp * cy;   // forward/nose direction in world space
+  const spd = 90;
+  const mx = ship.x + dx * 2.6, my = ship.y + dy * 2.6, mz = ship.z + dz * 2.6;
   bullets.push({
-    x: ship.x + fx * 2.4, y: ship.y - 0.2, z: ship.z + fz * 2.4,
-    vx: fx * sp + ship.vx, vy: -6, vz: fz * sp + ship.vz, life: 1.6,
+    x: mx, y: my, z: mz,
+    vx: dx * spd + ship.vx, vy: dy * spd, vz: dz * spd + ship.vz, life: 1.6,
   });
-  spawnExplosion(ship.x + fx * 2.4, ship.y, ship.z + fz * 2.4, [255, 230, 120], 2, 8);
+  spawnExplosion(mx, my, mz, [255, 230, 120], 2, 8);
 }
 
 function crash(reason) {
