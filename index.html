@@ -47,10 +47,16 @@
   }
   .overlay h1 small { display:block; letter-spacing: 4px; font-size: .28em; color:#7aa7c7; margin-top:8px; }
   .overlay p { max-width: 560px; color: #b9d4ec; font-size: 15px; line-height: 1.7; }
-  .keys { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; text-align: left; font-size: 14px; }
+  .keys {
+    display: grid; grid-template-columns: max-content 1fr;
+    gap: 8px 16px; align-items: center; text-align: left; font-size: 14px;
+  }
+  .keys .kc { display: flex; gap: 6px; justify-content: flex-end; align-items: center; }
+  .keys span:not(.kc) { color: #b9d4ec; }
   .keys kbd {
     background: #16273a; border: 1px solid #2f4f6e; border-bottom-width: 3px;
     border-radius: 5px; padding: 2px 9px; color: #d8ecff; font-family: inherit;
+    white-space: nowrap;
   }
   .overlay button {
     pointer-events: auto; cursor: pointer; font-family: inherit; font-size: 18px;
@@ -88,12 +94,12 @@
        before the infection (the brown rot) consumes the land. Shoot infected ground to
        cure it. Mind your altitude — and your shadow.</p>
     <div class="keys">
-      <kbd>W</kbd><span>thrust forward / tilt</span>
-      <kbd>S</kbd><span>thrust back</span>
-      <kbd>A</kbd> <kbd>D</kbd><span>turn (yaw)</span>
-      <kbd>Space</kbd><span>lift up (fight gravity)</span>
-      <kbd>Shift</kbd><span>descend / brake</span>
-      <kbd>Click</kbd> / <kbd>Ctrl</kbd><span>fire</span>
+      <span class="kc"><kbd>W</kbd></span><span>thrust forward / tilt</span>
+      <span class="kc"><kbd>S</kbd></span><span>thrust back</span>
+      <span class="kc"><kbd>A</kbd><kbd>D</kbd></span><span>turn left / right</span>
+      <span class="kc"><kbd>Space</kbd></span><span>lift up (fight gravity)</span>
+      <span class="kc"><kbd>Shift</kbd></span><span>descend / brake</span>
+      <span class="kc"><kbd>Click</kbd><kbd>Ctrl</kbd></span><span>fire</span>
     </div>
     <button id="startBtn">LAUNCH</button>
   </div>

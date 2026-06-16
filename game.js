@@ -340,9 +340,9 @@ const HOVER = GRAV * 0.62;   // passive anti-grav: you sink slowly, but don't pl
 
 function updateShip(dt) {
   if (!ship.alive) return;
-  // turning
-  if (keys.KeyA || keys.ArrowLeft) ship.yaw += TURN * dt;
-  if (keys.KeyD || keys.ArrowRight) ship.yaw -= TURN * dt;
+  // turning (A/left rotates left, D/right rotates right)
+  if (keys.KeyA || keys.ArrowLeft) ship.yaw -= TURN * dt;
+  if (keys.KeyD || keys.ArrowRight) ship.yaw += TURN * dt;
 
   const fx = Math.sin(ship.yaw), fz = Math.cos(ship.yaw);
 
@@ -388,8 +388,9 @@ function updateShip(dt) {
   // visual tilt from velocity (banking) — in ship-local frame
   const localF = ship.vx * fx + ship.vz * fz;      // forward speed
   const localR = ship.vx * fz - ship.vz * fx;      // sideways speed
-  ship.pitch = lerp(ship.pitch, clamp(-localF * 0.018, -0.5, 0.5), 6 * dt);
-  ship.roll = lerp(ship.roll, clamp(localR * 0.02, -0.5, 0.5), 6 * dt);
+  // nose dips when accelerating forward, lifts when reversing
+  ship.pitch = lerp(ship.pitch, clamp(localF * 0.018, -0.5, 0.5), 6 * dt);
+  ship.roll = lerp(ship.roll, clamp(-localR * 0.02, -0.5, 0.5), 6 * dt);
 
   if (ship.invuln > 0) ship.invuln -= dt;
 
