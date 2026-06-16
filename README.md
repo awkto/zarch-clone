@@ -26,16 +26,20 @@ python3 -m http.server 8000   # then visit http://localhost:8000
 
 | Key | Action |
 | --- | --- |
-| **W** / ↑ | thrust forward (ship tilts) |
-| **S** / ↓ | thrust back |
-| **A** **D** / ← → | turn (yaw) |
-| **Space** | lift up — fight gravity |
+| **W** / ↑ | tilt nose down (lean forward) |
+| **S** / ↓ | tilt nose up (lean back) |
+| **A** **D** / ← → | turn left / right |
+| **Space** | boost — fire the thruster |
 | **Shift** | descend / brake |
-| **Click** or **Ctrl** | fire |
+| **Click** or **Ctrl** | fire weapon |
 
-The ship has a passive hover thruster, so it sinks slowly rather than dropping like
-a stone — but you still have to manage altitude. Watch your **shadow** to judge how
-high you are, and don't slam into the ground or ditch in the sea.
+Flight works like the real *Zarch*: the ship has a single downward thruster.
+**Tilting alone doesn't move you** — it just aims the thruster. Hold **Space** to
+boost, and the thrust splits between lifting you up and driving you along: level =
+pure lift, leaned over = mostly horizontal. So to fly forward you hold **W** *and*
+**Space** together. A passive hover keeps you from dropping like a stone, but you
+still manage altitude — watch your **shadow**, and don't slam into the ground or
+ditch in the sea.
 
 ## Goal
 

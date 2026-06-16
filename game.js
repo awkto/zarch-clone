@@ -335,8 +335,10 @@ el("startBtn").onclick = resetGame;
 el("restartBtn").onclick = resetGame;
 
 /* ----------------------------- ship physics ----------------------------- */
-const GRAV = 17, LIFT = 30, THRUST = 30, TURN = 2.3, DRAG = 0.66;
+const GRAV = 17, BOOST = 34, TURN = 2.3, DRAG = 0.66;
 const HOVER = GRAV * 0.62;   // passive anti-grav: you sink slowly, but don't plummet
+const MAX_TILT = 0.7;        // ~40deg max pitch
+const PITCH_RATE = 2.2;      // how fast tilt responds to W/S
 
 function updateShip(dt) {
   if (!ship.alive) return;
@@ -346,16 +348,27 @@ function updateShip(dt) {
 
   const fx = Math.sin(ship.yaw), fz = Math.cos(ship.yaw);
 
-  let thrust = 0;
-  if (keys.KeyW || keys.ArrowUp) thrust += 1;
-  if (keys.KeyS || keys.ArrowDown) thrust -= 0.8;
-  ship.vx += fx * thrust * THRUST * dt;
-  ship.vz += fz * thrust * THRUST * dt;
+  // TILT (pitch): W tilts the nose down, S tilts it up. Tilting alone applies
+  // NO motion — it only redirects the thruster when you boost.
+  let tiltIn = 0;
+  if (keys.KeyW || keys.ArrowUp) tiltIn += 1;
+  if (keys.KeyS || keys.ArrowDown) tiltIn -= 1;
+  if (tiltIn !== 0) ship.pitch = clamp(ship.pitch + tiltIn * PITCH_RATE * dt, -MAX_TILT, MAX_TILT);
+  else ship.pitch = lerp(ship.pitch, 0, 5 * dt);   // ease back to level when released
 
-  // vertical: gravity, partly cancelled by passive hover lift
+  // gravity, partly cancelled by passive hover so you sink slowly, not plummet
   ship.vy -= (GRAV - HOVER) * dt;
-  if (keys.Space) ship.vy += LIFT * dt;
-  if (keys.ShiftLeft || keys.ShiftRight) { ship.vy -= LIFT * 0.7 * dt; ship.vx *= (1 - 1.4 * dt); ship.vz *= (1 - 1.4 * dt); }
+
+  // BOOST: the single down-pointing thruster fires along the ship's up axis.
+  // Tilt rotates that axis, so thrust splits between vertical (cos) and
+  // horizontal (sin) — the more you tilt, the more it drives you forward.
+  if (keys.Space) {
+    const cp = Math.cos(ship.pitch), sp = Math.sin(ship.pitch);
+    ship.vy += BOOST * cp * dt;                 // vertical share
+    ship.vx += fx * BOOST * sp * dt;            // horizontal share (along nose)
+    ship.vz += fz * BOOST * sp * dt;
+  }
+  if (keys.ShiftLeft || keys.ShiftRight) { ship.vy -= BOOST * 0.7 * dt; ship.vx *= (1 - 1.4 * dt); ship.vz *= (1 - 1.4 * dt); }
 
   // drag
   const d = Math.pow(DRAG, dt);
@@ -385,12 +398,11 @@ function updateShip(dt) {
     ship.vx *= Math.pow(0.2, dt); ship.vz *= Math.pow(0.2, dt); // ground friction
   }
 
-  // visual tilt from velocity (banking) — in ship-local frame
-  const localF = ship.vx * fx + ship.vz * fz;      // forward speed
-  const localR = ship.vx * fz - ship.vz * fx;      // sideways speed
-  // nose dips when accelerating forward, lifts when reversing
-  ship.pitch = lerp(ship.pitch, clamp(localF * 0.018, -0.5, 0.5), 6 * dt);
-  ship.roll = lerp(ship.roll, clamp(-localR * 0.02, -0.5, 0.5), 6 * dt);
+  // bank visually when turning (pitch is already set by the tilt controls)
+  let bank = 0;
+  if (keys.KeyA || keys.ArrowLeft) bank += 0.3;
+  if (keys.KeyD || keys.ArrowRight) bank -= 0.3;
+  ship.roll = lerp(ship.roll, bank, 5 * dt);
 
   if (ship.invuln > 0) ship.invuln -= dt;
 
