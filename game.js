@@ -335,10 +335,10 @@ el("startBtn").onclick = resetGame;
 el("restartBtn").onclick = resetGame;
 
 /* ----------------------------- ship physics ----------------------------- */
-const GRAV = 17, BOOST = 34, TURN = 2.3, DRAG = 0.66;
+const GRAV = 17, BOOST = 36, TURN = 2.3, DRAG = 0.72;
 const HOVER = GRAV * 0.62;   // passive anti-grav: you sink slowly, but don't plummet
-const MAX_TILT = 0.7;        // ~40deg max pitch
-const PITCH_RATE = 2.2;      // how fast tilt responds to W/S
+const MAX_TILT = 1.45;       // ~83deg: near-flat lean -> almost all thrust forward, lift dips below gravity so you sink toward the ground
+const PITCH_RATE = 3.0;      // how fast tilt responds to W/S
 
 function updateShip(dt) {
   if (!ship.alive) return;
